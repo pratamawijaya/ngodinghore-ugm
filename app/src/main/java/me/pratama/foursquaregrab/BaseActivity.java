@@ -5,6 +5,8 @@ import android.support.v7.widget.Toolbar;
 
 /**
  * Created by pratama on 11/15/14.
+ *
+ * Base Activity class, inherit from these Class if you use normal activity
  */
 public class BaseActivity extends ActionBarActivity {
 

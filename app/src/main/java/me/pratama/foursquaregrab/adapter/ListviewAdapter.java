@@ -82,6 +82,8 @@ public class ListviewAdapter extends BaseAdapter {
         } else {
             holder = (Holder) view.getTag();
         }
+
+        // diplay text
         holder.title.setText(listItem.get(i).getVenue().getName());
         holder.address.setText(listItem.get(i).getVenue().getLocation().getAddress());
         holder.categories.setText(listItem.get(i).getVenue().getCategories().get(0).getName());
@@ -98,6 +100,7 @@ public class ListviewAdapter extends BaseAdapter {
         String suffix = listItem.get(i).getVenue().getPhotos().getListGroups().get(0).getListPhoto().get(0).getSuffix();
         String urlPhoto = prefix + size + suffix;
 
+        // load photo into ImageView use Picasso
         Picasso.with(context).load(urlPhoto).into(holder.thumbnail);
         return view;
     }

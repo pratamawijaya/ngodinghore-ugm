@@ -33,12 +33,10 @@ import me.pratama.foursquaregrab.entity.ResponseFoursquare;
 
 
 public class MainActivity extends BaseActivity implements AdapterView.OnItemClickListener {
-
-
     @InjectView(R.id.listview)
     ListView listView;
-    private ListviewAdapter adapterListView;
 
+    private ListviewAdapter adapterListView;
     private ResponseFoursquare response;
     private List<ResponseFoursquare.Item> listItem;
     private ProgressDialog progressDialog;
@@ -61,6 +59,11 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
 
     }
 
+    /**
+     * request json for listing nearby location via Foursquare API
+     *
+     * @param URL
+     */
     private void getListPlace(String URL) {
         JsonObjectRequest request = new JsonObjectRequest(
                 URL, null,
@@ -69,10 +72,16 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                     public void onResponse(JSONObject jsonObject) {
                         progressDialog.dismiss();
                         try {
+                            /*
+                            * read/transform json using GsonLibrary
+                             */
                             response = new Gson().fromJson(jsonObject.getJSONObject("response").toString(), ResponseFoursquare.class);
 
+                            // add item into list for generate data into adapter listview
                             for (ResponseFoursquare.Item item : response.getListGroup().get(0).getListItem())
                                 listItem.add(item);
+
+                            // notify adapter for new data
                             adapterListView.notifyDataSetChanged();
 
                         } catch (JSONException e) {
