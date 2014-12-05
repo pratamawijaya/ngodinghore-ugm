@@ -91,7 +91,8 @@ public class ListviewAdapter extends BaseAdapter {
         holder.distance.setText("" + listItem.get(i).getVenue().getLocation().getDistance() + " meters");
 
         // set background color for rating
-        holder.rating.setBackgroundColor(((Color.parseColor("#" + listItem.get(i).getVenue().getRatingColor()))));
+        if (listItem.get(i).getVenue().getRatingColor() != null)
+            holder.rating.setBackgroundColor(((Color.parseColor("#" + listItem.get(i).getVenue().getRatingColor()))));
 
         // build url photo
         // prefix + size + suffix

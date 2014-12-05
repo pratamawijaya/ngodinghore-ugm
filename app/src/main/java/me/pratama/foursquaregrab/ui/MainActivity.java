@@ -2,6 +2,7 @@ package me.pratama.foursquaregrab.ui;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -14,6 +15,10 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -32,7 +37,7 @@ import me.pratama.foursquaregrab.adapter.ListviewAdapter;
 import me.pratama.foursquaregrab.entity.ResponseFoursquare;
 
 
-public class MainActivity extends BaseActivity implements AdapterView.OnItemClickListener {
+public class MainActivity extends BaseActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     @InjectView(R.id.listview)
     ListView listView;
 
@@ -41,12 +46,19 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
     private List<ResponseFoursquare.Item> listItem;
     private ProgressDialog progressDialog;
 
+    // location listener
+    private Location location;
+    private GoogleApiClient googleApiClient;
+    private boolean isGpsActived = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.inject(this);
 
+        Log.d("tag", "MainActivity");
         listItem = new ArrayList<ResponseFoursquare.Item>();
         adapterListView = new ListviewAdapter(this, listItem);
 
@@ -55,8 +67,14 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading");
-        getListPlace(Webservice.getExploreArea());
 
+        // cek gps active
+        isGpsActived = true;
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
     /**
@@ -129,5 +147,49 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (isGpsActived) {
+            Log.d("tag", "connect");
+            googleApiClient.connect();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (isGpsActived)
+            googleApiClient.disconnect();
+    }
+
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        if (location == null) {
+            Log.d("tag", "onconnected");
+            if (isGpsActived) {
+                location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                Log.d("tag", "get loc " + location.getLatitude() + "," + location.getLongitude());
+
+                if (location != null) {
+                    getListPlace(Webservice.getExploreArea(new LatLng(location.getLatitude(), location.getLongitude())));
+                } else {
+                    Toast.makeText(this, "can't get gps position", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Toast.makeText(this, "Faield get Location " + connectionResult.getErrorCode(), Toast.LENGTH_SHORT).show();
     }
 }

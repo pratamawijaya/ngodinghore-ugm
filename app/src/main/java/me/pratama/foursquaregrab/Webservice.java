@@ -1,5 +1,7 @@
 package me.pratama.foursquaregrab;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Created by pratama on 11/15/14.
  */
@@ -18,6 +20,10 @@ public class Webservice {
 
     public static String getExploreArea() {
         return API_ENDPOINT + VENUE_EXPLORE + "?" + BUILD_REQUEST + "&" + MOCK_LOCATION + "&venuePhotos=1";
+    }
+
+    public static String getExploreArea(LatLng latLng) {
+        return API_ENDPOINT + VENUE_EXPLORE + "?" + BUILD_REQUEST + "&" + "ll=" + latLng.latitude + "," + latLng.longitude + "&venuePhotos=1";
     }
 
     public static String getVenueDetail(String venueID) {
