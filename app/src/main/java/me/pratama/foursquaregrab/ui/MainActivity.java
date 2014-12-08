@@ -101,7 +101,6 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
         containerAds.addView(ads);
 
         request = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
 
         ads.loadAd(request);
