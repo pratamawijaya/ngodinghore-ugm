@@ -9,12 +9,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -29,6 +33,7 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import me.pratama.foursquaregrab.Ads;
 import me.pratama.foursquaregrab.BaseActivity;
 import me.pratama.foursquaregrab.BaseApplication;
 import me.pratama.foursquaregrab.R;
@@ -40,6 +45,8 @@ import me.pratama.foursquaregrab.entity.ResponseFoursquare;
 public class MainActivity extends BaseActivity implements AdapterView.OnItemClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     @InjectView(R.id.listview)
     ListView listView;
+    @InjectView(R.id.containerAds)
+    LinearLayout containerAds;
 
     private ListviewAdapter adapterListView;
     private ResponseFoursquare response;
@@ -50,6 +57,10 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
     private Location location;
     private GoogleApiClient googleApiClient;
     private boolean isGpsActived = false;
+
+    // for ads
+    private AdView ads;
+    private AdRequest request;
 
 
     @Override
@@ -75,6 +86,25 @@ public class MainActivity extends BaseActivity implements AdapterView.OnItemClic
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+        loadAdsBanner();
+    }
+
+    /**
+     * load ads for banner
+     */
+    private void loadAdsBanner() {
+        ads = new AdView(this);
+        ads.setAdSize(AdSize.BANNER);
+        ads.setAdUnitId(Ads.ADS_ID_BANNER);
+
+        containerAds.addView(ads);
+
+        request = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+
+        ads.loadAd(request);
     }
 
     /**

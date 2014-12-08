@@ -64,6 +64,4 @@ public class BaseApplication extends Application {
         if (requestQueue != null)
             requestQueue.cancelAll(tag);
     }
-
-
 }
